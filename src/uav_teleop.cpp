@@ -24,11 +24,9 @@ UAVTeleop::UAVTeleop() : Node("uav_teleop")
     command_pub_ = this->create_publisher<geometry_msgs::msg::Twist>(
         "mavros/setpoint_velocity/cmd_vel", rclcpp::QoS(1));
 
-    // this->declare_parameter<bool>("use_mpc_planner", false);
-    // this->declare_parameter<bool>("use_game", false);
-    // this->get_parameter("use_mpc_planner", use_mpc_planner_);
-    // this->get_parameter("use_game", use_game_);
-
+    timer_ = this->create_wall_timer(
+            std::chrono::milliseconds((int)(1.0/rate_)*1000),
+            std::bind(&UAVTeleop::timerCallback, this));
 }
 
 UAVTeleop::~UAVTeleop()
@@ -39,14 +37,18 @@ void UAVTeleop::initParameters()
 {
     // @TODO: Identify needed parameters.
     uav_name_ = this->get_namespace();
+    declare_parameter("rate", 20.0);
+    get_parameter("rate", rate_); // hz
     declare_parameter("max_speed", 1.0);
     get_parameter("max_speed", max_speed_);
     declare_parameter("max_yaw_speed", 1.0);
     get_parameter("max_yaw_speed", max_yaw_speed_);
+
+    // Print out for debugging.
     RCLCPP_INFO(get_logger(), "Parameter List");
     RCLCPP_INFO(get_logger(), "uav_name: %s", uav_name_.c_str());
-    RCLCPP_INFO(get_logger(), "max_speed: %.1f", max_speed_);
-    RCLCPP_INFO(get_logger(), "max_yaw_speed: %.1f", max_yaw_speed_);
+    RCLCPP_INFO(get_logger(), "max_speed: %f", max_speed_);
+    RCLCPP_INFO(get_logger(), "max_yaw_speed: %f", max_yaw_speed_);
     
 }
 
@@ -64,7 +66,10 @@ void UAVTeleop::joy_sub_callback(const sensor_msgs::msg::Joy::SharedPtr msg)
     joy_input_->land     = msg->buttons[0];
     joy_input_->mode     = msg->buttons[0];
 
-    // @TODO: Add the command publisher here
+}
+
+void UAVTeleop::timerCallback()
+{
     publishCommand(joy_input_);
 }
 

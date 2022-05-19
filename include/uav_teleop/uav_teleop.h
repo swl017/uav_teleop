@@ -47,13 +47,17 @@ protected:
 
     void joy_sub_callback(const sensor_msgs::msg::Joy::SharedPtr msg);
     void publishCommand(const std::shared_ptr<JoyInput> joy_input);
+    void timerCallback();
 
     rclcpp::Subscription<sensor_msgs::msg::Joy>::SharedPtr joy_sub_;
     rclcpp::Publisher<geometry_msgs::msg::Twist>::SharedPtr command_pub_;
     // rclcpp::Service<vrxperience_custom_msg::srv::HighLvlService>::SharedPtr high_level_control_service_;
 
 private:
+    rclcpp::TimerBase::SharedPtr timer_;
+
     std::string uav_name_;
+    double rate_; // hz
     double max_speed_;
     double max_yaw_speed_;
     std::shared_ptr<JoyInput> joy_input_;
