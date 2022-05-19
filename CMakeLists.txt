@@ -24,6 +24,7 @@ find_package(std_msgs REQUIRED)
 find_package(geometry_msgs REQUIRED)
 find_package(nav_msgs REQUIRED)
 find_package(sensor_msgs REQUIRED)
+find_package(mavros_msgs REQUIRED)
 
 # include
 include_directories(include)
@@ -39,6 +40,7 @@ ament_target_dependencies(
   "geometry_msgs"
   "nav_msgs"
   "sensor_msgs"
+  "mavros_msgs"
 )
 
 # install
