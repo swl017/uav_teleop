@@ -22,7 +22,7 @@ UAVTeleop::UAVTeleop() : Node("uav_teleop")
     joy_sub_ = this->create_subscription<sensor_msgs::msg::Joy>(
         "joy", rclcpp::QoS(1), std::bind(&UAVTeleop::joy_sub_callback, this, _1));
     command_pub_ = this->create_publisher<geometry_msgs::msg::Twist>(
-        "mavros/setpoint_velocity/cmd_vel", rclcpp::QoS(1));
+        "cmd_vel", rclcpp::QoS(1));
 
     timer_ = this->create_wall_timer(
             std::chrono::milliseconds((int)(1.0/rate_)*1000),
@@ -56,15 +56,15 @@ void UAVTeleop::joy_sub_callback(const sensor_msgs::msg::Joy::SharedPtr msg)
 {
     get_parameter("max_speed", max_speed_);
     get_parameter("max_yaw_speed", max_yaw_speed_);
-    // @TODO: Match axes index to rpy.
-    joy_input_->roll     = msg->axes[0];
-    joy_input_->pitch    = msg->axes[0];
+
+    joy_input_->roll     = msg->axes[3] * (-1);
+    joy_input_->pitch    = msg->axes[4];
     joy_input_->yaw      = msg->axes[0];
-    joy_input_->throttle = msg->axes[0];
-    joy_input_->arm      = msg->buttons[0];
-    joy_input_->takeoff  = msg->buttons[0];
-    joy_input_->land     = msg->buttons[0];
-    joy_input_->mode     = msg->buttons[0];
+    joy_input_->throttle = msg->axes[1];
+    joy_input_->arm      = msg->buttons[0];     // ps joy X button
+    joy_input_->takeoff  = msg->axes[7];        // ps joy arrow up = 1
+    joy_input_->land     = msg->axes[7] * (-1); // ps joy arrow down = 1
+    joy_input_->mode     = msg->buttons[5];     // ps joy R1 button
 
 }
 
@@ -81,8 +81,8 @@ void UAVTeleop::publishCommand(const std::shared_ptr<JoyInput> joy_input)
     geometry_msgs::msg::Twist cmd_vel;
     double klin = max_speed_;
     double kang = max_yaw_speed_;
-    cmd_vel.linear.x  = klin * joy_input->roll;
-    cmd_vel.linear.y  = klin * joy_input->pitch;
+    cmd_vel.linear.x  = klin * joy_input->pitch;
+    cmd_vel.linear.y  = klin * joy_input->roll * (-1);
     cmd_vel.linear.z  = klin * joy_input->throttle;
     cmd_vel.angular.z = kang * joy_input->yaw;
 
