@@ -25,7 +25,7 @@ UAVTeleop::UAVTeleop() : Node("uav_teleop")
         "cmd_vel", rclcpp::QoS(1));
 
     timer_ = this->create_wall_timer(
-            std::chrono::milliseconds((int)(1.0/rate_)*1000),
+            std::chrono::milliseconds((int)(1.0/rate_*1000)),
             std::bind(&UAVTeleop::timerCallback, this));
 }
 
