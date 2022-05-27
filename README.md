@@ -15,4 +15,9 @@ rosdep install --from-paths . --ignore-src -r -y
 ```bash
 ros2 run uav_teleop uav_teleop_node --ros-args -r __ns:=/uav2 -p max_speed:=2.0 
 ```
-> Reference: http://docs.ros.org/en/ros2_documentation/galactic/How-To-Guides/Node-arguments.html
+> Takeoff by pushing the throttle(left axes stick) up, move around using roll, pitch(right axes)
+
+
+## The Joystick
+- Model: Dualshock 4
+- Controller mode: Mode 2(Default), Mode 1(TODO)
