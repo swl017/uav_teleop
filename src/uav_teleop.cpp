@@ -57,14 +57,16 @@ void UAVTeleop::joy_sub_callback(const sensor_msgs::msg::Joy::SharedPtr msg)
     get_parameter("max_speed", max_speed_);
     get_parameter("max_yaw_speed", max_yaw_speed_);
 
-    joy_input_->roll     = msg->axes[3] * (-1);
-    joy_input_->pitch    = msg->axes[4];
-    joy_input_->yaw      = msg->axes[0];
-    joy_input_->throttle = msg->axes[1];
-    joy_input_->arm      = msg->buttons[0];     // ps joy X button
-    joy_input_->takeoff  = msg->axes[7];        // ps joy arrow up = 1
-    joy_input_->land     = msg->axes[7] * (-1); // ps joy arrow down = 1
-    joy_input_->mode     = msg->buttons[5];     // ps joy R1 button
+    joy_input_->roll     = msg->axes[3] * (-1); // RHS axis left <-> right
+    joy_input_->pitch    = msg->axes[4];        // RHS axis   up <-> down
+    joy_input_->yaw      = msg->axes[0];        // LHS axis left <-> right 
+    joy_input_->throttle = msg->axes[1];        // LHS axis   up <-> down
+
+    // TODO reserved
+    joy_input_->arm      = msg->buttons[0];     // logitech A           button | ps joy X               button
+    joy_input_->takeoff  = msg->axes[7];        // logitech arrow up    button | ps joy arrow up = 1    button
+    joy_input_->land     = msg->axes[7] * (-1); // logitech arrow down  button | ps joy arrow down = 1  button
+    joy_input_->mode     = msg->buttons[5];     // logitech LB          button | ps joy R1              button
 
 }
 
